@@ -17,7 +17,7 @@ const App: React.FC = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   useEffect(() => {
-    const newSocket = new WebSocket(`ws://${API_BASE_URL}`);
+    const newSocket = new WebSocket(`wss://${API_BASE_URL}`);
 
     newSocket.onmessage = (event) => {
       const update = JSON.parse(event.data);
