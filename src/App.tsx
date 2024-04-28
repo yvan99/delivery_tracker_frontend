@@ -3,6 +3,7 @@ import axios from 'axios';
 import { BrowserRouter as Router, Link } from 'react-router-dom';
 import { Modal, ModalOverlay, ModalContent, ModalHeader, ModalFooter, ModalBody, ModalCloseButton, Button, useDisclosure } from '@chakra-ui/react';
 import MapComponent from './components/MapComponent';
+import { API_BASE_URL } from './config/constants';
 
 interface Location {
   id: string;
@@ -16,7 +17,7 @@ const App: React.FC = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   useEffect(() => {
-    const newSocket = new WebSocket('ws://localhost:3000');
+    const newSocket = new WebSocket(`ws://${API_BASE_URL}`);
 
     newSocket.onmessage = (event) => {
       const update = JSON.parse(event.data);
@@ -28,7 +29,7 @@ const App: React.FC = () => {
     newSocket.onclose = () => console.log('WebSocket disconnected');
     newSocket.onerror = (error) => console.error('WebSocket error:', error);
 
-    axios.get('http://localhost:3000/api/locations')
+    axios.get(`${API_BASE_URL}/api/locations`)
       .then(response => {
         const warehouseData = response.data.data.map((loc: any) => ({
           id: loc._id,
@@ -39,7 +40,7 @@ const App: React.FC = () => {
       })
       .catch(error => console.error('Failed to fetch warehouses:', error));
 
-    axios.get('http://localhost:3000/api/vehicles')
+    axios.get(`${API_BASE_URL}/api/vehicles`)
       .then(response => {
         const vehicleData = response.data.map((vehicle: any) => ({
           id: vehicle._id,
