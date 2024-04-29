@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { BrowserRouter as Router, Link } from 'react-router-dom';
-import { Modal, ModalOverlay, ModalContent, ModalHeader, ModalFooter, ModalBody, ModalCloseButton, Button, useDisclosure } from '@chakra-ui/react';
+import { Modal, ModalOverlay, ModalContent, ModalHeader, ModalFooter, ModalBody, ModalCloseButton, Button, useDisclosure, Spinner, Center } from '@chakra-ui/react';
 import MapComponent from './components/MapComponent';
 import { API_BASE_URL, SOCKET_URL } from './config/constants';
 
@@ -14,9 +14,11 @@ interface Location {
 const App: React.FC = () => {
   const [warehouses, setWarehouses] = useState<Location[]>([]);
   const [vehicles, setVehicles] = useState<Location[]>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   useEffect(() => {
+    setIsLoading(true);
     const newSocket = new WebSocket(`wss://${SOCKET_URL}`);
     newSocket.onmessage = (event) => {
       const update = JSON.parse(event.data);
@@ -37,7 +39,8 @@ const App: React.FC = () => {
         }));
         setWarehouses(warehouseData);
       })
-      .catch(error => console.error('Failed to fetch warehouses:', error));
+      .catch(error => console.error('Failed to fetch warehouses:', error))
+      .finally(() => setIsLoading(false));
 
     axios.get(`${API_BASE_URL}/api/vehicles`)
       .then(response => {
@@ -48,7 +51,8 @@ const App: React.FC = () => {
         }));
         setVehicles(vehicleData);
       })
-      .catch(error => console.error('Failed to fetch vehicles:', error));
+      .catch(error => console.error('Failed to fetch vehicles:', error))
+      .finally(() => setIsLoading(false));
 
     return () => newSocket.close();
   }, []);
@@ -65,10 +69,14 @@ const App: React.FC = () => {
           </div>
         </nav>
         <main className='flex-grow container mx-auto'>
-          <MapComponent
-            warehouses={warehouses}
-            vehicles={vehicles}
-          />
+          {isLoading ? (
+            <Center h="full">
+              <Spinner size="xl" label="Loading data..." />
+              <p>Please wait while we're fetching map data</p>
+            </Center>
+          ) : (
+            <MapComponent warehouses={warehouses} vehicles={vehicles} />
+          )}
         </main>
         <footer className='bg-gray-800 text-white p-4 text-center'>
           © 2024 Developed by ISHIMWE Yvan
