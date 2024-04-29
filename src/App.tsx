@@ -3,7 +3,7 @@ import axios from 'axios';
 import { BrowserRouter as Router, Link } from 'react-router-dom';
 import { Modal, ModalOverlay, ModalContent, ModalHeader, ModalFooter, ModalBody, ModalCloseButton, Button, useDisclosure } from '@chakra-ui/react';
 import MapComponent from './components/MapComponent';
-import { API_BASE_URL } from './config/constants';
+import { API_BASE_URL, SOCKET_URL } from './config/constants';
 
 interface Location {
   id: string;
@@ -17,8 +17,7 @@ const App: React.FC = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   useEffect(() => {
-    const newSocket = new WebSocket(`wss://${API_BASE_URL}`);
-
+    const newSocket = new WebSocket(`ws://${SOCKET_URL}`);
     newSocket.onmessage = (event) => {
       const update = JSON.parse(event.data);
       setVehicles(prevVehicles => prevVehicles.map(vehicle =>
