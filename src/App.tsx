@@ -17,7 +17,7 @@ const App: React.FC = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   useEffect(() => {
-    const newSocket = new WebSocket(`wss://${SOCKET_URL}`);
+    const newSocket = new WebSocket(`ws://${SOCKET_URL}`);
     newSocket.onmessage = (event) => {
       const update = JSON.parse(event.data);
       setVehicles(prevVehicles => prevVehicles.map(vehicle =>
