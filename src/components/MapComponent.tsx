@@ -49,6 +49,7 @@ const MapComponent: React.FC<MapComponentProps> = ({ warehouses, vehicles }) => 
 
         directionsService.route(request, (result, status) => {
           if (status === google.maps.DirectionsStatus.OK) {
+             // @ts-ignore
             setDirectionsResponse(result);
           } else {
             console.error(`Error fetching directions: ${status}`);
@@ -65,6 +66,7 @@ const MapComponent: React.FC<MapComponentProps> = ({ warehouses, vehicles }) => 
       mapContainerStyle={containerStyle}
       center={center}
       zoom={5}
+    // @ts-ignore
       onLoad={(map) => (mapRef.current = map)}
     >
       {warehouses.map((location, idx) => (
